@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
@@ -12,18 +12,18 @@ export default function DocumentList() {
   const [statusFilter, setStatusFilter] = useState('');
   const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    if (searchParams.get('new') === '1') setShowForm(true);
-    fetchDocs();
-  }, [statusFilter]);
-
-  const fetchDocs = async () => {
+  const fetchDocs = useCallback(async () => {
     setLoading(true);
     const params = statusFilter ? `?status=${statusFilter}` : '';
     const res = await api.get(`/documents/${params}`);
     setDocs(res.data);
     setLoading(false);
-  };
+  }, [statusFilter]);
+
+  useEffect(() => {
+    if (searchParams.get('new') === '1') setShowForm(true);
+    fetchDocs();
+  }, [fetchDocs, searchParams]);
 
   const STATUS_COLORS = {
     pending: '#f59e0b', in_review: '#3b82f6', approved: '#10b981',

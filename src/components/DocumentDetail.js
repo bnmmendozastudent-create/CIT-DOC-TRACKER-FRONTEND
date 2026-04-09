@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import toast from 'react-hot-toast';
@@ -21,15 +21,15 @@ export default function DocumentDetail() {
   const [uploadError, setUploadError] = useState('');
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
-  useEffect(() => { fetchDoc(); }, [id, searchParams]);
-
-  const fetchDoc = async (keyOverride = null) => {
+  const fetchDoc = useCallback(async (keyOverride = null) => {
     const key = keyOverride ?? searchParams.get('key');
     const requestUrl = key ? `/documents/${id}/?key=${encodeURIComponent(key)}` : `/documents/${id}/`;
     const res = await api.get(requestUrl);
     setDoc(res.data);
     setQrValue(res.data.qr_code?.encoded_url || null);
-  };
+  }, [id, searchParams]);
+
+  useEffect(() => { fetchDoc(); }, [fetchDoc]);
 
   const handleGenerateQR = async () => {
     try {
