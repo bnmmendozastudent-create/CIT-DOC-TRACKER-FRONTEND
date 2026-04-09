@@ -1,13 +1,14 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 3000,
-  },
   build: {
-    outDir: 'dist',
+    target: 'esnext',        // ← often fixes top-level await & hanging
+    // or try: 'es2022'
+    minify: 'esbuild',       // or 'terser' if you prefer
+    rollupOptions: {
+      // If you suspect a specific heavy file, you can externalize or optimize it
+    }
   },
+  // Optional: increase timeout or log more
+  logLevel: 'info',
 })
